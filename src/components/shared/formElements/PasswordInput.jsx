@@ -37,7 +37,7 @@ const PasswordInput = ({
               <Input
                 type={showPassword ? "text" : "password"}
                 placeholder={placeholder}
-                error={!!errors[inputName]}
+                error={errors[inputName] ? "true" : undefined}
                 className={cn("pe-10", className)}
                 {...field}
               />
