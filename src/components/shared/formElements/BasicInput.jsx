@@ -33,7 +33,7 @@ const BasicInput = ({
               className={`m-[0px]`}
               type={type}
               placeholder={placeholder}
-              error={!!errors[inputName]}
+              error={errors[inputName] ? "true" : undefined}
               {...field}
             />
           </FormControl>

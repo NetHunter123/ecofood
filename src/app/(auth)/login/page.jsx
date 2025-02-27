@@ -26,7 +26,7 @@ export default function Page(props) {
             </p>
           </div>
           <div className="space-y-5">
-            {/*<SignInForm />*/}
+            <SignInForm />
             <Link
               href={"/signup"}
               className={"block text-center hover:underline"}

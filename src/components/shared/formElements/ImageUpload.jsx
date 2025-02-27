@@ -1,15 +1,20 @@
-"use client"
-import React, {useRef, useState} from 'react';
-import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+"use client";
+import React, { useRef, useState } from "react";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import Button from "@/components/shared/buttons/Button";
-import {RiDeleteBin5Line} from "react-icons/ri";
+import { RiDeleteBin5Line } from "react-icons/ri";
 
-const ImageUpload = ({form, inputName, label, description}) => {
-
+const ImageUpload = ({ form, inputName, label, description }) => {
   const fileInputRef = useRef(null); // Додаємо посилання на input
   const [previewImage, setPreviewImage] = useState(null);
   const [file, setFile] = useState(null);
-
 
   const handleImageChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -27,28 +32,36 @@ const ImageUpload = ({form, inputName, label, description}) => {
     setFile(null);
     form.setValue(inputName, null); // Скидаємо значення в стані форми
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''; // Очищуємо значення input
+      fileInputRef.current.value = ""; // Очищуємо значення input
     }
   };
 
-  const {formState: {errors}} = form
-
+  const {
+    formState: { errors },
+  } = form;
 
   return (
     <FormField
       control={form.control}
       name={inputName}
-      render={({field}) => (
+      render={({ field }) => (
         <FormItem className={"flex flex-col items-center"}>
-          {!!label && <FormLabel className={"text-start md:w-full"}>{label}</FormLabel>}
+          {!!label && (
+            <FormLabel className={"text-start md:w-full"}>{label}</FormLabel>
+          )}
           <FormControl>
             <div
-              className="relative w-[260px] h-[240px] border-2 border-dashed border-primary flex items-center justify-center cursor-pointer"
-              onClick={() => document.getElementById('imageUpload').click()}>
+              className="relative flex h-[240px] w-[260px] cursor-pointer items-center justify-center border-2 border-dashed border-primary"
+              onClick={() => document.getElementById("imageUpload").click()}
+            >
               {previewImage ? (
-                <img src={previewImage} alt="Preview" className="w-full h-full object-cover rounded-md"/>
+                <img
+                  src={previewImage}
+                  alt="Preview"
+                  className="h-full w-full rounded-md object-cover"
+                />
               ) : (
-                <span className="text-gray-400 text-3xl">+</span>
+                <span className="text-3xl text-gray-400">+</span>
               )}
               <input
                 ref={fileInputRef}
@@ -60,28 +73,30 @@ const ImageUpload = ({form, inputName, label, description}) => {
               />
             </div>
           </FormControl>
-          <FormMessage error={errors[inputName]}/>
+          <FormMessage error={errors[inputName]} />
           <FormDescription>
-            Допустимі формати тільки JPEG, PNG, JPG, WebP<br/>
+            Допустимі формати тільки JPEG, PNG, JPG, WebP
+            <br />
             Вага картинки має бути меншою ніж 5MB
           </FormDescription>
           {/*{!!description && (*/}
           {/*)}*/}
           {previewImage && (
-            <div className="flex justify-center gap-2 mt-2">
-              <Button variant="outline"
-              onClick={() => document.getElementById('imageUpload').click()}>
+            <div className="mt-2 flex justify-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => document.getElementById("imageUpload").click()}
+              >
                 Змінити зображення
               </Button>
               <Button variant="outlineDanger" onClick={handleImageRemove}>
-                <RiDeleteBin5Line/>
+                <RiDeleteBin5Line />
               </Button>
             </div>
           )}
         </FormItem>
       )}
     />
-
   );
 };
 

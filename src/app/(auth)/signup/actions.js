@@ -1,18 +1,20 @@
 "use server";
 
-import * as logger from "next/dist/build/output/log";
 import { signUpSchema } from "@/lib/validation";
 import { hash } from "@node-rs/argon2";
 import { generateIdFromEntropySize } from "lucia";
 import prisma from "@/lib/prisma";
 import { lucia } from "@/auth";
 import { cookies } from "next/headers";
+
 import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect";
 
 export async function signUp(credentials) {
   try {
     // username буде поле для телефону
-    const { username, email, password } = signUpSchema.parse(credentials);
+    const { name, surname, phone, email, password } =
+      signUpSchema.parse(credentials);
 
     const passwordHash = await hash(password, {
       memoryCost: 19456,
@@ -23,16 +25,16 @@ export async function signUp(credentials) {
 
     const userId = generateIdFromEntropySize(10);
 
-    const existingUsername = await prisma.user.findFirst({
+    const existingPhone = await prisma.user.findFirst({
       where: {
-        email: {
-          equals: username,
+        phone: {
+          equals: phone,
           mode: "insensitive",
         },
       },
     });
 
-    if (existingUsername) {
+    if (existingPhone) {
       return { error: "Такий номер уже зареєстрований" };
     }
 
@@ -52,16 +54,19 @@ export async function signUp(credentials) {
     await prisma.user.create({
       data: {
         id: userId,
-        username,
-        displayName: username,
+        phone,
         email,
+        name,
+        surname,
         passwordHash,
       },
     });
 
     const session = await lucia.createSession(userId, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
-    cookies().set(
+
+    const cookiesStore = await cookies();
+    cookiesStore.set(
       sessionCookie.name,
       sessionCookie.value,
       sessionCookie.attributes,
@@ -69,7 +74,8 @@ export async function signUp(credentials) {
 
     return redirect("/");
   } catch (error) {
-    console.error(error);
+    if (isRedirectError(error)) throw error;
+    console.error("SignUp action Error:", error);
     return { error: "Щось пішло не так. Будьласка спробуйте знову." };
   }
 }

@@ -16,11 +16,13 @@ datasource db {
 }
 
 model User {
-  id           String    @id
+  id      String  @id
   // username буде поле для телефону
-  username     String    @unique
-  displayName  String
-  email        String?   @unique
+  phone   String? @unique
+  email   String  @unique
+  name    String
+  surname String
+
   passwordHash String?
   googleId     String?   @unique
   // avatarUrl    String?
@@ -43,7 +45,59 @@ model Session {
   id        String   @id
   userId    String
   expiresAt DateTime
-  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+enum STATUS {
+  DRAFT
+  PUBLISH
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  title    String // Обов'язкове поле щоб поле було не обов'язковим потрібно додати анотацію ?
+  desc     String // Обов'язкове поле
+  images   Json // Обов'язкове поле // Зберігайте URL або ідентифікатор медіа
+  key      String    @unique // Обов'язкове поле
+  status   STATUS    @default(DRAFT) // Статус публікації
+  products Product[] @relation("CategoryProducts") // Один до багатьох
+
+  createdAt DateTime @default(now())
+
+  @@map("categories") // Додатково, якщо потрібно використовувати іншу назву таблиці в БД
+}
+
+model Product {
+  id           Int              @id @default(autoincrement())
+  status       STATUS           @default(DRAFT) // Статус публікації
+  title        String // Обов'язкове поле
+  desc         String // Обов'язкове поле
+  appointment  String // Обов'язкове поле
+  areas_of_use String // Обов'язкове поле
+  synopsis     String // Обов'язкове поле
+  popular      Boolean          @default(false)
+  vendor_code  String           @unique // Обов'язкове поле
+  // discountPrice     Decimal? // Знижена ціна
+  // discountStartDate DateTime? // Дата початку акції
+  // discountEndDate   DateTime? // Дата закінчення акції
+  // isOnSale          Boolean          @default(false) // Поле для акції
+  category     Category         @relation("CategoryProducts", fields: [categoryKey], references: [key])
+  categoryKey  String
+  variants     ProductVariant[] @relation("ProductVariants") // Один до багатьох
+
+  @@map("products") // Додатково, якщо потрібно використовувати іншу назву таблиці в БД
+}
+
+model ProductVariant {
+  id             Int     @id @default(autoincrement())
+  title          String // Обов'язкове поле
+  container_type String // Обов'язкове поле
+  price          Decimal // Обов'язкове поле
+  images         Json // Обов'язкове поле // Можна зберігати масив URL або ідентифікаторів медіа
+  product        Product @relation("ProductVariants", fields: [productVendor], references: [vendor_code])
+  productVendor  String
+
+  @@map("product_variants") // Додатково, якщо потрібно використовувати іншу назву таблиці в БД
 }

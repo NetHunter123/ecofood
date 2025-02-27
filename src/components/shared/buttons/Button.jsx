@@ -52,7 +52,7 @@ const buttonVariants = cva(
 	        hover:before:scale-x-100 rounded-[none] h-10 px-4 py-2 pb-2`,
       },
       ltI: {
-        true: "pl-2.5", // Стиль, якщо є лівий елемент
+        true: "pl-2.5 ", // Стиль, якщо є лівий елемент
         false: "",
       },
       rtI: {
@@ -72,13 +72,14 @@ const Button = React.forwardRef(
   (
     {
       asComp = "button",
-      loading = "false",
+      loading = false,
       variant,
       className,
       ltI,
       rtI,
       size = "md",
       children,
+      childrenClassName,
       ...props
     },
     ref,
@@ -102,7 +103,7 @@ const Button = React.forwardRef(
       button: {
         xs: "px-3 py-2 text-xl",
         sm: "px-3 py-2 text-sm",
-        md: "px-3 min-h-[35px] text-md",
+        md: "px-3 min-h-[35px] text-md ",
         lg: "px-4 py-3 text-base",
         xl: "px-5 py-3.5 text-base",
       },
@@ -129,9 +130,16 @@ const Button = React.forwardRef(
     return (
       <Comp className={cn(sizeClass, classes)} ref={ref} {...props}>
         {loading && <TbLoader3 className={"size-6 animate-spin"} />}
-        {!loading && !!ltI && <span className={"mt-[1.1px]"}>{ltI}</span>}
-        {!loading && (
-          <span className={"mt-[1.1px] leading-[16px]"}>{children}</span>
+        {!loading && !!ltI && <span>{ltI}</span>}
+        {!loading && children && (
+          <span
+            className={cn(
+              "children-b mt-[1.1px] leading-[16px]",
+              childrenClassName,
+            )}
+          >
+            {children}
+          </span>
         )}
         {/*<div className="bg-primary filter brightness-[95%] absolute top-0 bottom-0 left-0 right-0 z-10"></div>*/}
       </Comp>

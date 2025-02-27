@@ -16,8 +16,11 @@ export default function SignUpForm(props) {
   const form = useForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
+      phone: "",
       email: "",
       password: "",
+      name: "",
+      surname: "",
     },
   });
 
@@ -35,16 +38,28 @@ export default function SignUpForm(props) {
         {error && <p className={"text-center text-destructive"}>{error}</p>}
         <BasicInput
           form={form}
-          inputName={"username"}
-          label={"Юзер нейм"}
-          placeholder="username"
+          inputName={"name"}
+          label={"Ім'я"}
+          placeholder="ім'я"
+        />
+        <BasicInput
+          form={form}
+          inputName={"surname"}
+          label={"Прізвище"}
+          placeholder="прізвище"
+        />
+        <BasicInput
+          form={form}
+          inputName={"phone"}
+          label={"Телефон"}
+          placeholder="телефон"
         />
         <BasicInput
           form={form}
           type={"email"}
           inputName={"email"}
           label={"Ел.пошта"}
-          placeholder="email"
+          placeholder="пошта"
         />
         <PasswordInput
           form={form}

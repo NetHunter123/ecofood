@@ -1,7 +1,7 @@
 "use server";
 import * as logger from "next/dist/build/output/log";
 import { isRedirectError } from "next/dist/client/components/redirect";
-import { loginSchema } from "@/lib/validation";
+import { signInSchema } from "@/lib/validation";
 import prisma from "@/lib/prisma";
 import { verify } from "@node-rs/argon2";
 import { lucia } from "@/auth";
@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 
 export async function login(credentials) {
   try {
-    const { password, email } = loginSchema.parse(credentials);
+    const { password, email } = signInSchema.parse(credentials);
 
     const existingUser = await prisma.user.findFirst({
       where: {
@@ -42,7 +42,9 @@ export async function login(credentials) {
 
     const session = await lucia.createSession(existingUser.id, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
-    cookies().set(
+
+    const cookiesStore = await cookies();
+    await cookiesStore.set(
       sessionCookie.name,
       sessionCookie.value,
       sessionCookie.attributes,
@@ -53,7 +55,7 @@ export async function login(credentials) {
     if (isRedirectError(error)) {
       throw error;
     }
-    console.error(error);
+    console.error("SignIn action Error:", error);
 
     return { error: "Щось пішло не так. Будьласка спробуйте знову." };
   }

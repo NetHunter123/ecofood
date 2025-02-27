@@ -1,6 +1,6 @@
 "use server";
 
-import { validateRequest } from "@/auth";
+import { lucia, validateRequest } from "@/auth";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -15,7 +15,8 @@ export async function logout() {
 
   const sessionCookie = lucia.createBlankSessionCookie();
 
-  cookies().set(
+  const cookiesStore = await cookies();
+  cookiesStore.set(
     sessionCookie.name,
     sessionCookie.value,
     sessionCookie.attributes,
