@@ -22,7 +22,7 @@ export default async function Layout({ children }) {
               "sticky top-[5.25rem] hidden h-fit flex-none space-y-3 rounded-2xl bg-card px-3 py-5 shadow-sm sm:block lg:px-5 xl:w-60"
             }
           />
-          <div className="mx-auto min-h-[200vh] w-full">{children}</div>
+          <div className="mx-auto w-full">{children}</div>
         </div>
         <MenuBar
           className={

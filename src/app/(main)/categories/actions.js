@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect";
+import { fileUpload } from "@/app/actions";
+import { toast } from "@/hooks/use-toast";
 
 export async function createCategory(values) {
   try {
@@ -27,31 +29,40 @@ export async function createCategory(values) {
       category_status,
     );
 
-    // const existingKey = await prisma.category.findFirst({
-    //   where: {
-    //     key: {
-    //       equals: category_key,
-    //       mode: "insensitive",
-    //     },
-    //   },
-    // });
-    //
-    // if (existingKey) {
-    //   return { error: "Такий ключ уже існує" };
-    // }
+    const existingKey = await prisma.category.findFirst({
+      where: {
+        key: {
+          equals: category_key,
+          mode: "insensitive",
+        },
+      },
+    });
+
+    console.log("Category existingKey: ", existingKey);
+
+    if (existingKey) {
+      return { error: "Такий ключ уже існує" };
+    }
+
+    const { paths } = await fileUpload(category_filesImg);
+
+    if (!paths) {
+      return { error: "Помилка завантаження зображення" };
+    }
 
     // await prisma.category.create({
     //   data: {
     //     title: category_title,
     //     desc: category_desc,
-    //     images: category_filesImg,
+    //     images: paths,
     //     key: category_key,
     //     status: category_status,
     //   },
     // });
 
     // return redirect("/");
-    return { success: "Категорію успішно створено" };
+
+    return true;
   } catch (error) {
     if (isRedirectError(error)) throw error;
     console.error("createCategoryForm action Error: ", error);

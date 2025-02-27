@@ -10,9 +10,11 @@ import Button from "@/components/shared/buttons/Button";
 import ImageUpload from "@/components/shared/formElements/ImageUpload";
 import StatusSwitcher from "@/components/shared/formElements/StatusSwither";
 import { createCategory } from "@/app/(main)/categories/actions";
+import { useToast } from "@/hooks/use-toast";
 
 const CreateCategoryForm = () => {
   const [error, setError] = useState();
+  const { toast } = useToast();
 
   const [isPending, startTransition] = useTransition();
   const form = useForm({
@@ -31,9 +33,14 @@ const CreateCategoryForm = () => {
     setError(undefined);
 
     console.log("Submit CreateCategoryForm values: ", values);
+
     startTransition(async () => {
-      const { error } = await createCategory(values);
-      if (error) setError(error);
+      const result = await createCategory(values);
+
+      if (result === true) {
+      } else {
+        setError(error);
+      }
     });
   }
 
@@ -75,6 +82,12 @@ const CreateCategoryForm = () => {
             <div className="flex w-full flex-wrap justify-end gap-3">
               <StatusSwitcher form={form} inputName={"category_status"} />
               <Button
+                onClick={() => {
+                  toast({
+                    title: "Uh oh! Something went wrong.",
+                    description: "There was a problem with your request.",
+                  });
+                }}
                 type="submit"
                 loading={isPending}
                 className={"text-lg"}

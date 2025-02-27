@@ -39,11 +39,11 @@ async function checkFilesExist({ paths }) {
   return results;
 }
 
-export async function fileDelete(request) {
-  console.log("початок видалення");
+export async function fileDelete(filesPath) {
+  console.log("Delete start");
   // const formData = await request.formData();
   try {
-    const { filesPath } = await request.json();
+    // const { filesPath } = await request.json();
 
     if (!filesPath) {
       throw new Error("Необхідно коректно передати картинку для видалення");
@@ -77,10 +77,12 @@ export async function fileDelete(request) {
   }
 }
 
-export async function fileUpload(req) {
+export async function fileUpload(file) {
   console.log("Start upload");
-  const formData = await req.formData();
-  const files = formData.getAll("filesImg");
+  console.log("File Upload", file);
+  // const formData = await req.formData();
+  // const files = formData.getAll("filesImg");
+  const files = [file];
   const uploadPaths = { sm: [], md: [], thumbnails: [] };
   await fs.mkdir(path.join("./public/uploads/images"), { recursive: true });
 
@@ -136,12 +138,9 @@ export async function fileUpload(req) {
     }
 
     // Повернення JSON з шляхами
-    return NextResponse.json({ paths: uploadPaths }, { status: 201 });
+    return { paths: uploadPaths };
   } catch (e) {
     console.error(e);
-    return NextResponse.json(
-      { error: "Помилка при збереженні картинок", details: e.message },
-      { status: 500 },
-    );
+    return { error: "Помилка при збереженні картинок", details: e.message };
   }
 }
