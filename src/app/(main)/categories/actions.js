@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import { fileUpload } from "@/app/actions";
-import { toast } from "@/hooks/use-toast";
+import { error } from "next/dist/build/output/log";
 
 export async function createCategory(values) {
   try {
@@ -50,19 +50,19 @@ export async function createCategory(values) {
       return { error: "Помилка завантаження зображення" };
     }
 
-    // await prisma.category.create({
-    //   data: {
-    //     title: category_title,
-    //     desc: category_desc,
-    //     images: paths,
-    //     key: category_key,
-    //     status: category_status,
-    //   },
-    // });
+    await prisma.category.create({
+      data: {
+        title: category_title,
+        desc: category_desc,
+        images: paths,
+        key: category_key,
+        status: category_status,
+      },
+    });
 
     // return redirect("/");
 
-    return true;
+    return { error: false };
   } catch (error) {
     if (isRedirectError(error)) throw error;
     console.error("createCategoryForm action Error: ", error);

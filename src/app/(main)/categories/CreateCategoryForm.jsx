@@ -10,11 +10,10 @@ import Button from "@/components/shared/buttons/Button";
 import ImageUpload from "@/components/shared/formElements/ImageUpload";
 import StatusSwitcher from "@/components/shared/formElements/StatusSwither";
 import { createCategory } from "@/app/(main)/categories/actions";
-import { useToast } from "@/hooks/use-toast";
+import { Slide, toast } from "react-toastify";
 
 const CreateCategoryForm = () => {
   const [error, setError] = useState();
-  const { toast } = useToast();
 
   const [isPending, startTransition] = useTransition();
   const form = useForm({
@@ -37,9 +36,11 @@ const CreateCategoryForm = () => {
     startTransition(async () => {
       const result = await createCategory(values);
 
-      if (result === true) {
+      if (result?.error) {
+        setError(result?.error);
+        toast.error("Виникла помилка!");
       } else {
-        setError(error);
+        toast.success("Категорія успішно створена!");
       }
     });
   }
@@ -47,7 +48,6 @@ const CreateCategoryForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        {error && <p className={"text-center text-destructive"}>{error}</p>}
         <div className="flex flex-wrap gap-3 md:flex-nowrap">
           <div className={"flex w-full justify-center md:w-fit"}>
             <ImageUpload
@@ -57,19 +57,14 @@ const CreateCategoryForm = () => {
               description={""}
             />
           </div>
-          <div className="w-full">
+          <div className="flex w-full flex-col gap-1">
             <BasicInput
               form={form}
               inputName={"category_title"}
               label={"Заголовок"}
               placeholder="заголовок"
             />
-            <BasicInput
-              form={form}
-              inputName={"category_desc"}
-              label={"Опис"}
-              placeholder="опис"
-            />
+            {/*Поле для ключа (key) */}
             <BasicInput
               form={form}
               inputName={"category_key"}
@@ -77,8 +72,26 @@ const CreateCategoryForm = () => {
               placeholder="Код категорії"
               description={"(код писати аглійською)"}
             />
-            {/*Поле для ключа (key) */}
+            <BasicInput
+              form={form}
+              inputName={"category_desc"}
+              label={"Опис"}
+              placeholder="опис"
+            />
 
+            {error && (
+              <p
+                className={
+                  "relative mx-auto my-3 w-full max-w-[600px] px-1 py-3 text-center text-destructive"
+                }
+              >
+                <div className="absolute right-0 top-0 h-[2px] w-[15%] bg-destructive"></div>
+                <div className="absolute bottom-0 left-0 h-[2px] w-[15%] bg-destructive"></div>
+                <div className="absolute right-0 top-0 h-[25%] w-[2.5px] bg-destructive"></div>
+                <div className="absolute bottom-0 left-0 h-[25%] w-[2.5px] bg-destructive"></div>
+                {error}
+              </p>
+            )}
             <div className="flex w-full flex-wrap justify-end gap-3">
               <StatusSwitcher form={form} inputName={"category_status"} />
               <Button
