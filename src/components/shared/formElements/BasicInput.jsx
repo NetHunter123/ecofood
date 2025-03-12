@@ -15,6 +15,7 @@ const BasicInput = ({
   inputName,
   placeholder,
   description,
+  value,
   type = "text",
 }) => {
   const {
@@ -33,6 +34,9 @@ const BasicInput = ({
               className={`m-[0px]`}
               type={type}
               placeholder={placeholder}
+              value={value}
+              onChange={field.onChange}
+              onBlur={field.onBlur}
               error={errors[inputName] ? "true" : undefined}
               {...field}
             />

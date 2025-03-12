@@ -69,3 +69,5 @@ export async function createCategory(values) {
     return { error: "Щось пішло не так. Будьласка спробуйте знову." };
   }
 }
+
+export async function updateCategory(values) {}

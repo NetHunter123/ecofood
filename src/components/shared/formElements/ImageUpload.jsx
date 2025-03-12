@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FormControl,
   FormDescription,
@@ -11,16 +11,29 @@ import {
 import Button from "@/components/shared/buttons/Button";
 import { RiDeleteBin5Line } from "react-icons/ri";
 
-const ImageUpload = ({ form, inputName, label, description }) => {
+const ImageUpload = ({ form, inputName, label, description, currentImage }) => {
   const fileInputRef = useRef(null); // Додаємо посилання на input
   const [previewImage, setPreviewImage] = useState(null);
-  const [file, setFile] = useState(null);
+
+  // useEffect(() => {
+  //   if (currentImage) {
+  //     setPreviewImage(currentImage);
+  //   }
+  // }, [currentImage]);
+
+  const defaultImage = form.getValues(inputName);
+
+  // Встановлення дефолтного зображення при завантаженні компонента
+  useEffect(() => {
+    if (defaultImage) {
+      setPreviewImage(defaultImage.sm);
+    }
+  }, [defaultImage]);
 
   const handleImageChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile && selectedFile.type.startsWith("image/")) {
       setPreviewImage(URL.createObjectURL(selectedFile));
-      setFile(selectedFile);
       form.setValue(inputName, selectedFile); // Setting the file to be used with form submission
     } else {
       alert("Будь ласка, оберіть файл зображення");
@@ -29,7 +42,6 @@ const ImageUpload = ({ form, inputName, label, description }) => {
 
   const handleImageRemove = () => {
     setPreviewImage(null);
-    setFile(null);
     form.setValue(inputName, null); // Скидаємо значення в стані форми
     if (fileInputRef.current) {
       fileInputRef.current.value = ""; // Очищуємо значення input
@@ -67,7 +79,10 @@ const ImageUpload = ({ form, inputName, label, description }) => {
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
-                onChange={handleImageChange}
+                onChange={(e) => {
+                  handleImageChange(e);
+                  field.onChange(e.target.files[0]);
+                }}
                 className="hidden"
                 id="imageUpload"
               />
