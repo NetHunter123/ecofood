@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import CategoryForm from "@/app/(main)/categories/CategoryForm";
 
 const Page = async ({ params }) => {
-  const { key } = params;
+  const { key } = await params;
 
   const category = await prisma.category.findUnique({
     where: { key: key },

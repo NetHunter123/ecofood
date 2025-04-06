@@ -32,7 +32,7 @@ const Page = async () => {
           Додати нову категорію
         </Button>
 
-        <ul className="">
+        <ul className="flex flex-wrap justify-start gap-3">
           {categories?.map((category) => (
             <li key={category.id}>
               <CategoryItem category={category} />

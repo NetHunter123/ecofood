@@ -29,16 +29,59 @@ const CategoryForm = ({ category }) => {
       category_title: category?.title || "",
       category_desc: category?.desc || "",
       category_key: category?.key || "",
-      category_filesImg: category?.images || "",
+      category_filesImg: { ...category?.images },
       category_status: category?.status || "DRAFT",
       // products: "", // Може бути select/dropdown
     },
   });
 
+  const hasChanges = (initialValues, newValues) => {
+    const fieldsToCompare = [
+      "category_title",
+      "category_desc",
+      "category_key",
+      "category_status",
+    ];
+
+    // Порівняння текстових полів і статусу
+    for (const field of fieldsToCompare) {
+      if (initialValues[field] !== newValues[field]) {
+        return true;
+      }
+    }
+
+    // Порівняння зображень
+    if (newValues.category_filesImg instanceof File) {
+      return true; // Якщо завантажено новий файл, є зміни
+    }
+
+    return (
+      JSON.stringify(initialValues.category_filesImg) !==
+      JSON.stringify(newValues.category_filesImg)
+    );
+
+    // Змін немає
+  };
+
   async function onSubmit(values) {
     setError(undefined);
 
     console.log("Submit CategoryForm values: ", values);
+
+    // Початкові значення категорії
+    const initialValues = {
+      category_title: category?.title || "",
+      category_desc: category?.desc || "",
+      category_key: category?.key || "",
+      category_filesImg: category?.images,
+      category_status: category?.status || "DRAFT",
+    };
+
+    // Перевірка наявності змін
+    if (!hasChanges(initialValues, values)) {
+      toast.info("Змін у категорії не виявлено.");
+      return; // Виходимо, якщо змін немає
+    }
 
     startTransition(async () => {
       const result = !!category
@@ -68,6 +111,7 @@ const CategoryForm = ({ category }) => {
               inputName={"category_filesImg"}
               label={"Картинка Категорії"}
               description={""}
+              defaultImage={category?.images || null}
             />
           </div>
           <div className="flex w-full flex-col gap-1">
@@ -95,8 +139,10 @@ const CategoryForm = ({ category }) => {
             <RTEditor
               form={form}
               inputName={"category_desc"}
+              label={"Опис"}
               // getMDContent={setMDEditor}
               // MDContent={MDEditor}
+              initContent={category?.desc || ""}
             />
 
             {error && (

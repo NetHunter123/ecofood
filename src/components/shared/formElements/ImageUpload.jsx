@@ -11,26 +11,29 @@ import {
 import Button from "@/components/shared/buttons/Button";
 import { RiDeleteBin5Line } from "react-icons/ri";
 
-const ImageUpload = ({ form, inputName, label, description, currentImage }) => {
+const ImageUpload = ({ form, inputName, label, description, defaultImage }) => {
   const fileInputRef = useRef(null); // Додаємо посилання на input
   const [previewImage, setPreviewImage] = useState(null);
 
-  // useEffect(() => {
-  //   if (currentImage) {
-  //     setPreviewImage(currentImage);
-  //   }
-  // }, [currentImage]);
-
-  const defaultImage = form.getValues(inputName);
-
-  // Встановлення дефолтного зображення при завантаженні компонента
   useEffect(() => {
     if (defaultImage) {
       setPreviewImage(defaultImage.sm);
     }
   }, [defaultImage]);
 
+  console.log("get imgupl:", form.getValues(inputName));
+
+  // const defaultImage = form.getValues(inputName);
+  //
+  // // Встановлення дефолтного зображення при завантаженні компонента
+  // useEffect(() => {
+  //   if (!!defaultImage) {
+  //     setPreviewImage(defaultImage.sm);
+  //   }
+  // }, [defaultImage]);
+
   const handleImageChange = (event) => {
+    event.preventDefault();
     const selectedFile = event.target.files[0];
     if (selectedFile && selectedFile.type.startsWith("image/")) {
       setPreviewImage(URL.createObjectURL(selectedFile));
@@ -79,9 +82,9 @@ const ImageUpload = ({ form, inputName, label, description, currentImage }) => {
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
-                onChange={(e) => {
-                  handleImageChange(e);
-                  field.onChange(e.target.files[0]);
+                onChange={(event) => {
+                  handleImageChange(event);
+                  // field.onChange(event.target.files[0]);
                 }}
                 className="hidden"
                 id="imageUpload"
@@ -99,12 +102,17 @@ const ImageUpload = ({ form, inputName, label, description, currentImage }) => {
           {previewImage && (
             <div className="mt-2 flex justify-center gap-2">
               <Button
+                type={"button"}
                 variant="outline"
                 onClick={() => document.getElementById("imageUpload").click()}
               >
                 Змінити зображення
               </Button>
-              <Button variant="outlineDanger" onClick={handleImageRemove}>
+              <Button
+                type={"button"}
+                variant="outlineDanger"
+                onClick={handleImageRemove}
+              >
                 <RiDeleteBin5Line />
               </Button>
             </div>

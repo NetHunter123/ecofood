@@ -126,7 +126,7 @@ const RtEditor = ({
               form={form}
               type="hidden"
               inputName={inputName || "rteditor"}
-              value={MDContent || MDContentIn || ""}
+              value={MDContent || MDContentIn || initContent || "asd"}
             />
           )}
 

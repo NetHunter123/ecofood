@@ -15,7 +15,7 @@ const paths = {
   },
 };
 
-async function checkFilesExist({ paths }) {
+async function checkFilesExist(paths) {
   let results = true;
 
   for (const [category, files] of Object.entries(paths)) {
@@ -40,7 +40,7 @@ async function checkFilesExist({ paths }) {
 }
 
 export async function fileDelete(filesPath) {
-  console.log("Delete start");
+  console.log("Delete start filesPath:", filesPath);
   // const formData = await request.formData();
   try {
     // const { filesPath } = await request.json();
@@ -57,14 +57,24 @@ export async function fileDelete(filesPath) {
     for (const [category, files] of Object.entries(filesPath.paths)) {
       await Promise.all(
         files.map(async (filePath) => {
+          const absolutePath = path.join(process.cwd(), "public", filePath);
           try {
             // Отримуємо абсолютний шлях файлу
-            const absolutePath = path.join(process.cwd(), "public", filePath);
 
+            await fs.access(absolutePath);
             await fs.unlink(absolutePath);
-          } catch (e) {
-            console.log("catch dell file", filePath);
-            throw new Error(`Не вдалося видалити файл ${filePath}:`, e);
+            console.log(`Файл ${absolutePath} успішно видалено`);
+          } catch (error) {
+            if (error.code === "ENOENT") {
+              console.log(`Файл ${absolutePath} не знайдено, пропускаємо`);
+              throw new Error(
+                `Файл ${absolutePath} не знайдено, пропускаємо`,
+                error,
+              );
+            } else {
+              console.error(`Помилка видалення файлу ${absolutePath}:`, error);
+              throw new Error(`Помилка видалення файлу ${absolutePath}`, error);
+            }
           }
         }),
       );

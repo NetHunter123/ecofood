@@ -42,14 +42,22 @@ export const createCategorySchema = z.object({
   }),
   category_desc: requiredString.or(z.literal("")),
 
-  category_filesImg: z
-    .instanceof(File, { message: "Зображення є обов'язковим." })
-    .refine((file) => !file || file.size <= MAX_FILE_SIZE, {
-      message: "Вага картинки має бути меншою ніж 5MB",
-    })
-    .refine((file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type), {
-      message: "Допустимі формати тільки JPEG, PNG, JPG, WebP",
+  category_filesImg: z.union([
+    z
+      .instanceof(File, { message: "Зображення є обов'язковим." })
+      .refine((file) => !file || file.size <= MAX_FILE_SIZE, {
+        message: "Вага картинки має бути меншою ніж 5MB",
+      })
+      .refine((file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type), {
+        message: "Допустимі формати тільки JPEG, PNG, JPG, WebP",
+      }),
+    z.object({
+      md: z.array(z.union([z.string().url(), z.string().startsWith("/")])),
+      sm: z.array(z.union([z.string().url(), z.string().startsWith("/")])),
+      thumbnails: z.array(
+        z.union([z.string().url(), z.string().startsWith("/")]),
+      ),
     }),
-
+  ]),
   category_status: StatusEnum.default("DRAFT"),
 });
