@@ -15,12 +15,14 @@ import {
 } from "@/app/(main)/categories/actions";
 import { Slide, toast } from "react-toastify";
 import RTEditor from "@/components/shared/formElements/RTEditor";
+import prisma from "@/lib/prisma";
 
 const CategoryForm = ({ category }) => {
   const [error, setError] = useState();
   const [MDEditor, setMDEditor] = useState();
   const [isPending, startTransition] = useTransition();
 
+  const { id } = category;
   console.log("CategoryForm props category:", category);
 
   const form = useForm({
@@ -35,7 +37,7 @@ const CategoryForm = ({ category }) => {
     },
   });
 
-  const hasChanges = (initialValues, newValues) => {
+  /* const hasChanges = (initialValues, newValues) => {
     const fieldsToCompare = [
       "category_title",
       "category_desc",
@@ -61,7 +63,7 @@ const CategoryForm = ({ category }) => {
     );
 
     // Змін немає
-  };
+  };*/
 
   async function onSubmit(values) {
     setError(undefined);
@@ -69,19 +71,20 @@ const CategoryForm = ({ category }) => {
     console.log("Submit CategoryForm values: ", values);
 
     // Початкові значення категорії
-    const initialValues = {
-      category_title: category?.title || "",
-      category_desc: category?.desc || "",
-      category_key: category?.key || "",
+
+    /* const initialValues = {
+      category_title: category?.title,
+      category_desc: category?.desc,
+      category_key: category?.key,
       category_filesImg: category?.images,
-      category_status: category?.status || "DRAFT",
+      category_status: category?.status,
     };
 
     // Перевірка наявності змін
     if (!hasChanges(initialValues, values)) {
       toast.info("Змін у категорії не виявлено.");
       return; // Виходимо, якщо змін немає
-    }
+    }*/
 
     startTransition(async () => {
       const result = !!category
@@ -91,6 +94,8 @@ const CategoryForm = ({ category }) => {
       if (result?.error) {
         setError(result?.error);
         toast.error("Виникла помилка!");
+      } else if (result?.message === "Змін не виявлено") {
+        toast.info("Змін не виявлено");
       } else {
         toast.success(
           !!category

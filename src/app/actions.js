@@ -15,12 +15,12 @@ const paths = {
   },
 };
 
-async function checkFilesExist(paths) {
+async function checkFilesExist(files) {
   let results = true;
 
-  for (const [category, files] of Object.entries(paths)) {
+  for (const [category, filePaths] of Object.entries(files)) {
     results = await Promise.all(
-      files.map(async (filePath) => {
+      filePaths.map(async (filePath) => {
         try {
           // Отримуємо абсолютний шлях файлу
           const absolutePath = path.join(process.cwd(), "public", filePath);
@@ -28,6 +28,7 @@ async function checkFilesExist(paths) {
           // Перевіряємо, чи файл існує
           // console.log("try check exist file",filePath)
           await fs.access(absolutePath);
+          return true;
         } catch {
           // console.log("try check exist file",filePath)
           return false;
@@ -54,7 +55,7 @@ export async function fileDelete(filesPath) {
       throw new Error("Не існує файл(и) які потрібно видалити");
     }
 
-    for (const [category, files] of Object.entries(filesPath.paths)) {
+    for (const [category, files] of Object.entries(filesPath)) {
       await Promise.all(
         files.map(async (filePath) => {
           const absolutePath = path.join(process.cwd(), "public", filePath);
@@ -67,13 +68,13 @@ export async function fileDelete(filesPath) {
           } catch (error) {
             if (error.code === "ENOENT") {
               console.log(`Файл ${absolutePath} не знайдено, пропускаємо`);
-              throw new Error(
+              /*throw new Error(
                 `Файл ${absolutePath} не знайдено, пропускаємо`,
                 error,
-              );
+              );*/
             } else {
               console.error(`Помилка видалення файлу ${absolutePath}:`, error);
-              throw new Error(`Помилка видалення файлу ${absolutePath}`, error);
+              // throw new Error(`Помилка видалення файлу ${absolutePath}`, error);
             }
           }
         }),

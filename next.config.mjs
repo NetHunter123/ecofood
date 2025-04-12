@@ -5,7 +5,7 @@ const nextConfig = {
       duration: 30,
     },
     serverActions: {
-      bodySizeLimit: "20mb", // Збільш ліміт до 10 МБ (налаштуй за потребою)
+      bodySizeLimit: "1mb", // Збільш ліміт до 10 МБ (налаштуй за потребою)
     },
   },
 
